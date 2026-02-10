@@ -1,0 +1,11 @@
+[package]
+name = "symbdiff"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "diff-rs"
+path = "src/bin/main.rs"
+
+[dependencies]
+quickcheck = "1.0.3"
