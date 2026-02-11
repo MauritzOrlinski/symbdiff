@@ -46,38 +46,36 @@ impl MathExpr<f32> {
                 let diff1 = Box::new(math_expr.derive(variable));
                 let diff2 = Box::new(math_expr1.derive(variable));
                 MathExpr::Add(
-                    Box::new(MathExpr::Mul(diff2, Box::new(math_expr.deep_clone()))),
-                    Box::new(MathExpr::Mul(diff1, Box::new(math_expr1.deep_clone()))),
+                    Box::new(MathExpr::Mul(diff2, math_expr.clone())),
+                    Box::new(MathExpr::Mul(diff1, math_expr1.clone())),
                 )
             }
             MathExpr::Div(math_expr, math_expr1) => {
                 let diff1 = Box::new(math_expr.derive(variable));
                 let diff2 = Box::new(math_expr1.derive(variable));
                 let diff2squared = Box::new(MathExpr::Power(
-                    Box::new(diff2.deep_clone()),
+                    diff2.clone(),
                     Box::new(MathExpr::Value(2.0)),
                 ));
                 MathExpr::Div(
                     Box::new(MathExpr::Sub(
-                        Box::new(MathExpr::Mul(diff1, Box::new(math_expr1.deep_clone()))),
-                        Box::new(MathExpr::Mul(diff2, Box::new(math_expr.deep_clone()))),
+                        Box::new(MathExpr::Mul(diff1, math_expr1.clone())),
+                        Box::new(MathExpr::Mul(diff2, math_expr.clone())),
                     )),
                     diff2squared,
                 )
             }
             MathExpr::Minus(math_expr) => MathExpr::Minus(Box::new(math_expr.derive(variable))),
             MathExpr::Power(math_expr, math_expr1) => {
-                let product = Box::new(math_expr.derive(variable));
+                let product_rule = Box::new(math_expr.derive(variable));
+                let factor = Box::new(MathExpr::Mul(math_expr1.clone(), product_rule));
                 let new_exponent = Box::new(MathExpr::Sub(
-                    Box::new(math_expr1.deep_clone()),
+                    math_expr1.clone(),
                     Box::new(MathExpr::Value(1.0)),
                 ));
                 MathExpr::Mul(
-                    product,
-                    Box::new(MathExpr::Power(
-                        Box::new(math_expr.deep_clone()),
-                        new_exponent,
-                    )),
+                    factor,
+                    Box::new(MathExpr::Power(math_expr.clone(), new_exponent)),
                 )
             }
             MathExpr::Function(function, math_expr) => function.derive(math_expr),

@@ -22,33 +22,21 @@ pub enum MathExpr<T: Clone> {
     Variable(String),
 }
 
-impl<T> MathExpr<T>
+impl<T> Clone for MathExpr<T>
 where
     T: Clone,
 {
-    pub fn deep_clone(&self) -> Self {
+    fn clone(&self) -> Self {
         match self {
-            MathExpr::Add(a, b) => {
-                MathExpr::Add(Box::new(a.deep_clone()), Box::new(b.deep_clone()))
-            }
-            MathExpr::Sub(a, b) => {
-                MathExpr::Sub(Box::new(a.deep_clone()), Box::new(b.deep_clone()))
-            }
-            MathExpr::Mul(a, b) => {
-                MathExpr::Mul(Box::new(a.deep_clone()), Box::new(b.deep_clone()))
-            }
-            MathExpr::Div(a, b) => {
-                MathExpr::Div(Box::new(a.deep_clone()), Box::new(b.deep_clone()))
-            }
-            MathExpr::Minus(a) => MathExpr::Minus(Box::new(a.deep_clone())),
-            MathExpr::Power(a, b) => {
-                MathExpr::Power(Box::new(a.deep_clone()), Box::new(b.deep_clone()))
-            }
-            MathExpr::Function(f, arg) => {
-                MathExpr::Function(f.clone_box(), Box::new(arg.deep_clone()))
-            }
-            MathExpr::Value(v) => MathExpr::Value(v.clone()),
-            MathExpr::Variable(s) => MathExpr::Variable(s.clone()),
+            Self::Add(arg0, arg1) => Self::Add(arg0.clone(), arg1.clone()),
+            Self::Sub(arg0, arg1) => Self::Sub(arg0.clone(), arg1.clone()),
+            Self::Div(arg0, arg1) => Self::Div(arg0.clone(), arg1.clone()),
+            Self::Mul(arg0, arg1) => Self::Mul(arg0.clone(), arg1.clone()),
+            Self::Minus(arg0) => Self::Minus(arg0.clone()),
+            Self::Power(arg0, arg1) => Self::Power(arg0.clone(), arg1.clone()),
+            Self::Function(arg0, arg1) => Self::Function(arg0.clone_box(), arg1.clone()),
+            Self::Value(arg0) => Self::Value(arg0.clone()),
+            Self::Variable(arg0) => Self::Variable(arg0.clone()),
         }
     }
 }
