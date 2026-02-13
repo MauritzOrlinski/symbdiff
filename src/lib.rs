@@ -1,12 +1,19 @@
-/// A Symbolic differentiation library
+//! # SymbDiff - A Symbolic differentiation library
+//!
+//! A small library for deriving mathematical functions of any amount of variables, using a symbolic approach.
+//! The idea is to walk through the AST of the expression and apply differentiation rules.
+//! Every mathematical function can be executed for a specific variable assignment.
 pub(crate) mod ast;
 pub mod basic_functions;
 pub(crate) mod macros;
 use std::fmt::Display;
 
+/// An interface for defining mathematical functions yourself
+/// We only allow maps of the form $f: T \to T$ for a generic set T
 pub trait DerivableFunction<T: Clone>: Display {
-    fn exec(&self, value: T) -> T;
-    fn derive(&self, math_expr: &MathExpr<T>) -> MathExpr<T>;
+    /// Evaluates the underlying function
+    fn eval(&self, value: T) -> T;
+    fn derive(&self, math_expr: &MathExpr<T>, variable: &str) -> MathExpr<T>;
     fn clone_box(&self) -> Box<dyn DerivableFunction<T>>;
 }
 

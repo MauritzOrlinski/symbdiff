@@ -2,11 +2,12 @@
 name = "symbdiff"
 version = "0.1.0"
 edition = "2024"
+authors = ["Mauritz Orlinski"]
 description = "A small symbolic differentiation library"
 readme = "README.md"
 homepage = ""
-repository = "https://github.com/mauritzorlinski/symbdiff"
-keywords = ["Symbolic differentiation", "Machine Learning"]
+repository = "https://github.com/MauritzOrlinski/symbdiff"
+keywords = ["Symbolic Differentiation", "Machine Learning"]
 categories = ["mathematics", "science"]
 
 
@@ -14,6 +15,11 @@ categories = ["mathematics", "science"]
 name = "diff-rs"
 path = "src/bin/main.rs"
 
+[[bench]]
+name = "bench"
+harness = false
+
 [dependencies]
 quickcheck = "1.0.3"
 num-traits = "0.2.19"
+criterion = "0.8.2"

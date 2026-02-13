@@ -19,7 +19,10 @@ macro_rules! expr {
         $crate::MathExpr::Minus(Box::new(expr!($a)))
     };
     ((exp($a:tt))) => {
-        $crate::MathExpr::Function(Function::Exp, Box::new(expr!($a)))
+        $crate::MathExpr::Function(
+            Box::new($crate::basic_functions::BasicFunctions::Exp),
+            Box::new(expr!($a)),
+        )
     };
     ((ln($a:tt))) => {
         $crate::MathExpr::Function(Function::Ln, Box::new(expr!($a)))

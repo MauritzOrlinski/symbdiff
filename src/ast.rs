@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::MathExpr;
 
 impl MathExpr<f32> {
-    pub fn exec(&self, assignments: &HashMap<String, f32>) -> f32 {
+    pub fn exec(&self, assignments: &HashMap<&str, f32>) -> f32 {
         match self {
             MathExpr::Add(math_expr1, math_expr2) => {
                 math_expr1.exec(assignments) + math_expr2.exec(assignments)
@@ -23,16 +23,16 @@ impl MathExpr<f32> {
                 .powf(math_expr2.exec(assignments)),
             MathExpr::Function(function, math_expr) => {
                 let result = math_expr.exec(assignments);
-                function.exec(result)
+                function.eval(result)
             }
             MathExpr::Value(v) => *v,
             MathExpr::Variable(name) => *assignments
-                .get(name)
+                .get(name.as_str())
                 .unwrap_or_else(|| panic!("Variable {name} undefined")),
         }
     }
 
-    pub fn derive(&self, variable: &String) -> Self {
+    pub fn derive(&self, variable: &str) -> Self {
         match self {
             MathExpr::Add(math_expr, math_expr1) => MathExpr::Add(
                 Box::new(math_expr.derive(variable)),
@@ -78,7 +78,7 @@ impl MathExpr<f32> {
                     Box::new(MathExpr::Power(math_expr.clone(), new_exponent)),
                 )
             }
-            MathExpr::Function(function, math_expr) => function.derive(math_expr),
+            MathExpr::Function(function, math_expr) => function.derive(math_expr, variable),
             MathExpr::Value(_) => MathExpr::Value(0.0),
             MathExpr::Variable(x) => {
                 if x == variable {
@@ -104,41 +104,41 @@ mod test {
         let eps = f32::EPSILON;
         (a - b).abs() <= eps * a.abs().max(b.abs()).max(1.0)
     }
-
     quickcheck! {
         fn linear_expr(x: f32) -> bool {
             let t: MathExpr<f32> = expr!((add(x, 1.0)));
-            let v = String::from(stringify!(x));
+            let v = stringify!(x);
             let mut assignment = HashMap::new();
-            assignment.insert(v.clone(), x);
+            assignment.insert(v,x);
             approx_eq(t.exec(&assignment), x + 1.0)
         }
     }
     quickcheck! {
         fn quadratic_expr(x: f32) -> bool {
             let t: MathExpr<f32> = expr!((pow(x, 2.0)));
-            let v = String::from(stringify!(x));
+            let v = stringify!(x);
             let mut assignment = HashMap::new();
-            assignment.insert(v.clone(), x);
+            assignment.insert(v, x);
             approx_eq(t.exec(&assignment), x.powf(2.0))
         }
     }
     quickcheck! {
         fn cubic_expr(x: f32) -> bool {
             let t: MathExpr<f32> = expr!((pow(x, 3.0)));
-            let v = String::from(stringify!(x));
+            let v = stringify!(x);
             let mut assignment = HashMap::new();
-            assignment.insert(v.clone(), x);
-            approx_eq(t.exec(&assignment), x.powf(2.0))
+            assignment.insert(v, x);
+            approx_eq(t.exec(&assignment), x.powf(3.0))
         }
     }
     quickcheck! {
         fn pow(x: f32, exp: f32) -> bool {
-            println!("{x}, {exp}");
-            let t: MathExpr<f32> = expr!((pow(x, exp)));
-            let v = String::from(stringify!(x));
+            let t: MathExpr<f32> = expr!((pow(x, e)));
+            let v = stringify!(x);
+            let e = stringify!(e);
             let mut assignment = HashMap::new();
-            assignment.insert(v.clone(), x);
+            assignment.insert(v, x);
+            assignment.insert(e, exp);
             println!("{}", t.exec(&assignment));
             println!("{}", x.powf(exp));
             approx_eq(t.exec(&assignment), x.powf(exp))

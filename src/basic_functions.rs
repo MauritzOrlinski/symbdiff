@@ -18,7 +18,7 @@ impl Display for BasicFunctions {
     }
 }
 impl DerivableFunction<f32> for BasicFunctions {
-    fn exec(&self, value: f32) -> f32 {
+    fn eval(&self, value: f32) -> f32 {
         match self {
             BasicFunctions::Exp => f32::exp(value),
             BasicFunctions::Ln => f32::ln(value),
@@ -29,14 +29,48 @@ impl DerivableFunction<f32> for BasicFunctions {
         }
     }
     #[allow(unused)]
-    fn derive(&self, math_expr: &MathExpr<f32>) -> MathExpr<f32> {
+    fn derive(&self, math_expr: &MathExpr<f32>, variable: &str) -> MathExpr<f32> {
         match self {
-            BasicFunctions::Exp => todo!(),
-            BasicFunctions::Ln => todo!(),
+            BasicFunctions::Exp => MathExpr::Mul(
+                Box::new(math_expr.derive(variable)),
+                Box::new(MathExpr::Function(
+                    self.clone_box(),
+                    Box::new(math_expr.clone()),
+                )),
+            ),
+            BasicFunctions::Ln => MathExpr::Mul(
+                Box::new(math_expr.derive(variable)),
+                Box::new(MathExpr::Div(
+                    Box::new(MathExpr::Value(1.0)),
+                    Box::new(math_expr.clone()),
+                )),
+            ),
             BasicFunctions::Log(_) => todo!(),
-            BasicFunctions::Sin => todo!(),
-            BasicFunctions::Cos => todo!(),
-            BasicFunctions::Sqrt => todo!(),
+            BasicFunctions::Sin => MathExpr::Mul(
+                Box::new(math_expr.derive(variable)),
+                Box::new(MathExpr::Function(
+                    Box::new(BasicFunctions::Cos),
+                    Box::new(math_expr.clone()),
+                )),
+            ),
+            BasicFunctions::Cos => MathExpr::Mul(
+                Box::new(math_expr.derive(variable)),
+                Box::new(MathExpr::Minus(Box::new(MathExpr::Function(
+                    Box::new(BasicFunctions::Cos),
+                    Box::new(math_expr.clone()),
+                )))),
+            ),
+
+            BasicFunctions::Sqrt => MathExpr::Div(
+                Box::new(MathExpr::Value(1.0)),
+                Box::new(MathExpr::Mul(
+                    Box::new(MathExpr::Value(2.0)),
+                    Box::new(MathExpr::Function(
+                        self.clone_box(),
+                        Box::new(math_expr.clone()),
+                    )),
+                )),
+            ),
         }
     }
 
