@@ -1,45 +1,57 @@
 #[macro_export]
 macro_rules! expr {
-    ((add($a:tt , $b:tt))) => {
-        $crate::MathExpr::Add(Box::new(expr!($a)), Box::new(expr!($b)))
+    ($symbols:ident, (add($a:tt , $b:tt))) => {
+        $crate::MathExpr::add(expr!($symbols, $a), expr!($symbols, $b))
     };
-    ((sub($a:tt , $b:tt))) => {
-        $crate::MathExpr::Sub(Box::new(expr!($a)), Box::new(expr!($b)))
+    ($symbols:ident, (sub($a:tt , $b:tt))) => {
+        $crate::MathExpr::sub(expr!($symbols, $a), expr!($symbols, $b))
     };
-    ((mul($a:tt , $b:tt))) => {
-        $crate::MathExpr::Mul(Box::new(expr!($a)), Box::new(expr!($b)))
+    ($symbols:ident, (mul($a:tt , $b:tt))) => {
+        $crate::MathExpr::mul(expr!($symbols, $a), expr!($symbols, $b))
     };
-    ((div($a:tt , $b:tt))) => {
-        $crate::MathExpr::Div(Box::new(expr!($a)), Box::new(expr!($b)))
+    ($symbols:ident, (div($a:tt , $b:tt))) => {
+        $crate::MathExpr::div(expr!($symbols, $a), expr!($symbols, $b))
     };
-    ((pow($a:tt , $b:tt))) => {
-        $crate::MathExpr::Power(Box::new(expr!($a)), Box::new(expr!($b)))
+    ($symbols:ident, (pow($a:tt , $b:tt))) => {
+        $crate::MathExpr::pow(expr!($symbols, $a), expr!($symbols, $b))
     };
-    ((neg($a:tt))) => {
-        $crate::MathExpr::Minus(Box::new(expr!($a)))
+    ($symbols:ident, (neg($a:tt))) => {
+        $crate::MathExpr::minus(expr!($symbols, $a))
     };
-    ((exp($a:tt))) => {
-        $crate::MathExpr::Function(
-            Box::new($crate::basic_functions::BasicFunctions::Exp),
-            Box::new(expr!($a)),
+    ($symbols:ident, (exp($a:tt))) => {
+        $crate::MathExpr::function(
+            $crate::basic_functions::BasicFunctions::Exp,
+            expr!($symbols, $a),
         )
     };
-    ((ln($a:tt))) => {
-        $crate::MathExpr::Function(Function::Ln, Box::new(expr!($a)))
+    ($symbols:ident, (ln($a:tt))) => {
+        $crate::MathExpr::function(
+            $crate::basic_functions::BasicFunctions::Ln,
+            expr!($symbols, $a),
+        )
     };
-    ((sin($a:tt))) => {
-        $crate::MathExpr::Function(Function::Sin, Box::new(expr!($a)))
+    ($symbols:ident, (sin($a:tt))) => {
+        $crate::MathExpr::function(
+            $crate::basic_functions::BasicFunctions::Sin,
+            expr!($symbols, $a),
+        )
     };
-    ((cos($a:tt))) => {
-        $crate::MathExpr::Function(Function::Cos, Box::new(expr!($a)))
+    ($symbols:ident, (cos($a:tt))) => {
+        $crate::MathExpr::function(
+            $crate::basic_functions::BasicFunctions::Cos,
+            expr!($symbols, $a),
+        )
     };
-    ((sqrt($a:tt))) => {
-        $crate::MathExpr::Function(Function::Sqrt, Box::new(expr!($a)))
+    ($symbols:ident, (sqrt($a:tt))) => {
+        $crate::MathExpr::function(
+            $crate::basic_functions::BasicFunctions::Sqrt,
+            expr!($symbols, $a),
+        )
     };
-    ($v:literal) => {
-        $crate::MathExpr::Value($v)
+    ($symbols:ident, $v:literal) => {
+        $crate::MathExpr::lit($v)
     };
-    ($v:ident) => {
-        $crate::MathExpr::Variable(stringify!($v).into())
+    ($symbols:ident, $v:ident) => {
+        $symbols.intern(stringify!($v))
     };
 }

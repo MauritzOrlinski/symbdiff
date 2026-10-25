@@ -7,19 +7,17 @@ description = "A small symbolic differentiation library"
 readme = "README.md"
 homepage = ""
 repository = "https://github.com/MauritzOrlinski/symbdiff"
-keywords = ["Symbolic Differentiation", "Machine Learning"]
+keywords = ["Symbolic-Differentiation", "Machine-Learning"]
 categories = ["mathematics", "science"]
 
-
-[[bin]]
-name = "diff-rs"
-path = "src/bin/main.rs"
 
 [[bench]]
 name = "bench"
 harness = false
 
 [dependencies]
-quickcheck = "1.0.3"
 num-traits = "0.2.19"
+fxhash = "0.2.1"
+[dev-dependencies]
 criterion = "0.8.2"
+quickcheck = "1.0.3"

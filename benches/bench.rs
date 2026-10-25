@@ -2,14 +2,15 @@
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use std::hint::black_box;
-use symbdiff::expr;
+use symbdiff::{SymbolTable, expr};
 
 fn exp_nth_derivative(c: &mut Criterion) {
     let mut group = c.benchmark_group("exp_nth_derivative");
 
     for n in [1, 2, 4, 8] {
-        let exp = expr!((exp((add(x, 1.0)))));
-        let x = stringify!(x);
+        let mut symbols = SymbolTable::new();
+        let x = symbols.intern("x");
+        let exp = expr!(symbols, (exp((add(x, 1.0)))));
         group.bench_with_input(format!("n={}", n), &n, |b, _| {
             b.iter(|| {
                 black_box({
